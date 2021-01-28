@@ -14,6 +14,6 @@ public class Node {
     private String article;
     private List<String> imgList;
     private String magnet;
-    private int status = 0;
+    private int status;
     private Selectable node;
 }

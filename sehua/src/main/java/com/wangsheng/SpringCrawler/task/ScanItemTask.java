@@ -45,7 +45,7 @@ public class ScanItemTask extends AbstartTask{
     @Override
     public List<String> buildUrls() {
         List<String> urls = new ArrayList<>();
-        result.setStatus(Result.State.START_1);
+        result.setStatus(Result.State.START_2);
         for (Node node : result.getNodes()){
             urls.add(node.getUrl());
         }

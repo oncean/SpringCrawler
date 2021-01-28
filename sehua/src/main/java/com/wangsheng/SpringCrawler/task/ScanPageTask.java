@@ -29,7 +29,6 @@ public class ScanPageTask extends AbstartTask {
 
     @Override
     public void parse(Page page){
-        List<Node> items = new ArrayList<>();
         try{
             List<Selectable> nodes = page.getHtml().css("th.new").nodes();
             nodes.addAll(page.getHtml().css("th.common").nodes());
@@ -42,7 +41,6 @@ public class ScanPageTask extends AbstartTask {
                         result.addNode(item);
                     }
                 }
-                log.info("新增"+items.size()+"个扫描项....");
             }
         }catch (Exception e){
             log.error("scan list page "+ page.getUrl() + " error... ");

@@ -2,6 +2,7 @@ package com.wangsheng.SpringCrawler.websocket.sockets;
 
 import com.alibaba.fastjson.JSON;
 import com.wangsheng.SpringCrawler.task.TotalTask;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -62,11 +63,12 @@ public class ScanServerEndpoint {
             default:
                 break;
         }
+
     }
 
     private void startTask(Message message, final Session session){
         final TotalTask task = new TotalTask(message.total,session);
-        //task.start();
+        task.start();
         map.put(message.taskId,task);
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -81,6 +83,8 @@ public class ScanServerEndpoint {
         },0,1000);
     }
 
+
+    @Data
     private static class Message{
         private enum TYPES{
             START,STOP
