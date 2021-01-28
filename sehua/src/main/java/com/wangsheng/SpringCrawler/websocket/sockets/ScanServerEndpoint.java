@@ -66,7 +66,7 @@ public class ScanServerEndpoint {
 
     private void startTask(Message message, final Session session){
         final TotalTask task = new TotalTask(message.total,session);
-        task.start();
+        //task.start();
         map.put(message.taskId,task);
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
