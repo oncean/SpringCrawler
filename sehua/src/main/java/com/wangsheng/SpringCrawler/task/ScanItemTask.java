@@ -4,7 +4,9 @@ import com.wangsheng.SpringCrawler.downloader.Downloader;
 import com.wangsheng.SpringCrawler.generate.SpiderGenerator;
 import com.wangsheng.SpringCrawler.model.Node;
 import com.wangsheng.SpringCrawler.model.Result;
+import com.wangsheng.SpringCrawler.model.TaskState;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
@@ -25,27 +27,29 @@ public class ScanItemTask extends AbstartTask{
 
     @Override
     public void parse(Page page){
+        Node item = new Node(page.getUrl().get());
         try{
             List<Selectable> nodes = page.getHtml().css("div.pct td").nodes();
             if(nodes != null && nodes.size()>0){
                 Selectable node =  nodes.get(0);
-                Node item = Node.builder().url(page.getUrl().get())
+                item = Node.builder().url(page.getUrl().get())
                         .article(node.regex("【出演女优】：(.*?)<br>").get())
                         .imgList(node.css("img").regex("file=\"(.*?)\"").all())
                         .magnet(node.css("li").get())
                         .title(node.regex("【影片名称】：(.*?)<br>").get())
-                        .status(1)
                         .build();
-                result.setNode(item);
+                scanNodeSuccess(item);
             }
         }catch (Exception e){
+            log.error("parse page " + page.getUrl().get()+"failed,error is ", e);
+            scanNodeError(item,e.getMessage());
         }
     }
 
     @Override
     public List<String> buildUrls() {
         List<String> urls = new ArrayList<>();
-        result.setStatus(Result.State.START_2);
+        result.setStatus(TotalTask.State.START_2);
         for (Node node : result.getNodes()){
             urls.add(node.getUrl());
         }
@@ -54,6 +58,28 @@ public class ScanItemTask extends AbstartTask{
 
     @Override
     public void end() {
-        result.setStatus(Result.State.END);
+        result.setStatus(TotalTask.State.END);
+    }
+
+
+    public void scanNodeSuccess(Node node){
+        for (Node item: result.getNodes()) {
+            if(item.getUrl().equals(node.getUrl())){
+                BeanUtils.copyProperties(node,item);
+                node.setState(TaskState.SUCCESS);
+                break;
+            }
+        }
+    }
+
+    public void scanNodeError(Node node,String errMsg){
+        for (Node item: result.getNodes()) {
+            if(item.getUrl().equals(node.getUrl())){
+                BeanUtils.copyProperties(node,item);
+                node.setState(TaskState.ERROR);
+                node.setErrMsg(errMsg);
+                break;
+            }
+        }
     }
 }

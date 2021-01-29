@@ -9,6 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>sehua</module>
+        <module>crawler-task</module>
     </modules>
     <packaging>pom</packaging>
 

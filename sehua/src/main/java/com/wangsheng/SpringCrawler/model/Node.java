@@ -14,6 +14,10 @@ public class Node {
     private String article;
     private List<String> imgList;
     private String magnet;
-    private int status;
+    private TaskState state = TaskState.LOADING;
     private Selectable node;
+    private String errMsg;
+    public Node(String url){
+        this.url = url;
+    }
 }
