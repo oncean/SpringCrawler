@@ -70,8 +70,14 @@ public class ScanPageTask extends AbstartTask {
     }
 
     @Override
-    public void failedHandler() throws Exception {
-        throw new Exception("失败");
+    public void errorHandler(String url) {
+        for (MainPage page :
+                result.getMainPageList()) {
+            if (page.getUrl().equals(url)) {
+                page.setState(TaskState.ERROR);
+                break;
+            }
+        }
     }
 
 

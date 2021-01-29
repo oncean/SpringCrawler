@@ -32,12 +32,11 @@ public class ScanItemTask extends AbstartTask{
             List<Selectable> nodes = page.getHtml().css("div.pct td").nodes();
             if(nodes != null && nodes.size()>0){
                 Selectable node =  nodes.get(0);
-                item = Node.builder().url(page.getUrl().get())
-                        .article(node.regex("【出演女优】：(.*?)<br>").get())
-                        .imgList(node.css("img").regex("file=\"(.*?)\"").all())
-                        .magnet(node.css("li").get())
-                        .title(node.regex("【影片名称】：(.*?)<br>").get())
-                        .build();
+                 item.setArticle(node.regex("【出演女优】：(.*?)<br>").get());
+                 item.setCode(page.getHtml().$("#thread_subject").regex(">(.*?) ").get());
+                 item.setImgList(node.css("img").regex("file=\"(.*?)\"").all());
+                        item.setMagnet(node.css("li").regex("<li>(.*?)</li>").get());
+                        item.setTitle(node.regex("【影片名称】：(.*?)<br>").get());
                 scanNodeSuccess(item);
             }
         }catch (Exception e){
@@ -61,12 +60,22 @@ public class ScanItemTask extends AbstartTask{
         result.setStatus(TotalTask.State.END);
     }
 
+    @Override
+    public void errorHandler(String url) {
+        for (Node page :
+                result.getNodes()) {
+            if (page.getUrl().equals(url)) {
+                page.setState(TaskState.ERROR);
+                break;
+            }
+        }
+    }
 
     public void scanNodeSuccess(Node node){
         for (Node item: result.getNodes()) {
             if(item.getUrl().equals(node.getUrl())){
                 BeanUtils.copyProperties(node,item);
-                node.setState(TaskState.SUCCESS);
+                item.setState(TaskState.SUCCESS);
                 break;
             }
         }

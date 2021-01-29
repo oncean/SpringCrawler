@@ -4,11 +4,16 @@ import com.wangsheng.SpringCrawler.downloader.Downloader;
 import com.wangsheng.SpringCrawler.generate.SpiderGenerator;
 import com.wangsheng.SpringCrawler.model.Result;
 import us.codecraft.webmagic.Page;
+import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
+import us.codecraft.webmagic.downloader.HttpClientDownloader;
 import us.codecraft.webmagic.processor.PageProcessor;
+import us.codecraft.webmagic.proxy.Proxy;
+import us.codecraft.webmagic.proxy.SimpleProxyProvider;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,7 +38,7 @@ public abstract class AbstartTask implements PageProcessor {
     public abstract void parse(Page page);
     public abstract List<String> buildUrls();
     public abstract void end();
-
+    public abstract void errorHandler(String url);
 
 
     @Override
@@ -47,32 +52,20 @@ public abstract class AbstartTask implements PageProcessor {
     }
 
     private void scan(List<String> pageUrl) throws Exception {
-        Downloader downloader= SpiderGenerator.getHttpClientDownloader();
-        int retryTime = 0;
+        InnerDownloader downloader = new InnerDownloader();
+        downloader.setProxyProvider(SimpleProxyProvider.from(
+                new Proxy("127.0.0.1",10809)
+        ));
         int total = pageUrl.size();
-        do {
-            if(retryTime>0){
-                //第二次就从download error获取
-                pageUrl = downloader.getErrors();
-            }
-            Spider.create(this)
-                    .setDownloader(SpiderGenerator.getHttpClientDownloader())
-                    // 添加初始化的URL
-                    .addUrl((String[]) pageUrl.toArray(new String[0]))
-                    // 使用单线程
-                    .thread(total<10?total:10)
-                    // 运行
-                    .run();
-            retryTime++;
-        }while (!downloader.ifSuccess() && retryTime<=maxRetryTime);
-        if(!downloader.ifSuccess()){
-            System.out.println("重试"+taskName+"任务"+maxRetryTime+"次,仍然失败"+ downloader.getErrors());
-            failedHandler();
-        }
-    }
 
-    public void failedHandler() throws Exception {
-        //nothing to do
+        Spider.create(this)
+                .setDownloader(downloader)
+                // 添加初始化的URL
+                .addUrl((String[]) pageUrl.toArray(new String[0]))
+                // 使用单线程
+                .thread(total<10?total:10)
+                // 运行
+                .run();
     }
 
     public void start() throws Exception {
@@ -80,4 +73,11 @@ public abstract class AbstartTask implements PageProcessor {
         end();
     }
 
+
+    public class InnerDownloader  extends HttpClientDownloader {
+        @Override
+        protected void onError(Request request) {
+            errorHandler(request.getUrl());
+        }
+    }
 }
