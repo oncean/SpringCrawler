@@ -1,23 +1,19 @@
 package com.wangsheng.SpringCrawler.model;
 
-import lombok.Builder;
 import lombok.Data;
-import us.codecraft.webmagic.selector.Selectable;
 
 import java.util.List;
 
 @Data
-public class Node {
-    private String url;
+public class Node extends ScanItem {
     private String title;
     private String article;
     private List<String> imgList;
     private String magnet;
     private String code;
-    private TaskState state = TaskState.LOADING;
-    private String errMsg;
+
     public Node(String url){
-        this.url = url;
+        super(url);
     }
 }
 

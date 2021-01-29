@@ -1,15 +1,27 @@
 package com.wangsheng.SpringCrawler.controller;
 
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.wangsheng.SpringCrawler.model.CreateParams;
+import com.wangsheng.SpringCrawler.service.TaskService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/task")
 public class TaskController {
-    @GetMapping("/create/${}")
-    public String createTask(){
 
+    @Autowired
+    private TaskService taskService;
+
+    @PostMapping("/create")
+    public String createTask(@RequestBody CreateParams createParams){
+        return taskService.create(createParams.getPages());
+    }
+
+    @GetMapping("/retry/{taskId}")
+    public void retry(@PathVariable("taskId") String taskId){
+        taskService.retry(taskId);
     }
 }

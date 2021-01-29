@@ -17,23 +17,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class AbstartTask implements PageProcessor {
+public abstract class AbstractTask implements PageProcessor {
 
     protected Result result;
 
-    protected int maxRetryTime;
-
-    public String taskName = "";
-
-    public  AbstartTask(Result result){
+    public  AbstractTask(Result result){
         //默认重试时间为10次
-        this(result,10);
+        this.result = result;
     }
 
-    public AbstartTask(Result result,int maxRetryTime){
-        this.result = result;
-        this.maxRetryTime = maxRetryTime;
-    }
 
     public abstract void parse(Page page);
     public abstract List<String> buildUrls();
@@ -69,7 +61,8 @@ public abstract class AbstartTask implements PageProcessor {
     }
 
     public void start() throws Exception {
-        scan(buildUrls());
+        //scan(buildUrls());
+        Thread.sleep(30000);
         end();
     }
 

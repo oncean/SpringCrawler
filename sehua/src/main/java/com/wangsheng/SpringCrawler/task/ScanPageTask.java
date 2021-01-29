@@ -1,31 +1,23 @@
 package com.wangsheng.SpringCrawler.task;
 
-import com.wangsheng.SpringCrawler.downloader.Downloader;
-import com.wangsheng.SpringCrawler.generate.SpiderGenerator;
 import com.wangsheng.SpringCrawler.model.MainPage;
 import com.wangsheng.SpringCrawler.model.Node;
 import com.wangsheng.SpringCrawler.model.Result;
-import com.wangsheng.SpringCrawler.model.TaskState;
+import com.wangsheng.SpringCrawler.model.ScanItemState;
 import lombok.extern.slf4j.Slf4j;
 import us.codecraft.webmagic.Page;
-import us.codecraft.webmagic.Site;
-import us.codecraft.webmagic.Spider;
-import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Selectable;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
-public class ScanPageTask extends AbstartTask {
-    private int total;
-    private String LIST_PAGE = "https://sehuatang.org/forum-103-{0}.html";
+public class ScanPageTask extends AbstractTask {
+    private final static String LIST_PAGE = "https://sehuatang.org/forum-103-{0}.html";
 
-    public ScanPageTask(Result result,int total) {
+    public ScanPageTask(Result result) {
         super(result);
-        this.total = total;
     }
 
 
@@ -55,13 +47,23 @@ public class ScanPageTask extends AbstartTask {
     @Override
     public List<String> buildUrls() {
         List<String> urls = new ArrayList<>();
-        for (int i = 0; i < total; i++) {
-            String url = MessageFormat.format(LIST_PAGE,i+1);
-            urls.add(url);
-            addItem(url);
-        }
         result.setStatus(TotalTask.State.START_1);
+        for (MainPage page : result.getMainPageList()){
+            if(page.getState() == ScanItemState.NEW || page.getState() == ScanItemState.ERROR){
+                urls.add(page.getUrl());
+                page.setState(ScanItemState.LOADING);
+            }
+        }
         return urls;
+    }
+
+    public static List<MainPage> generate(int []pageNums){
+        List<MainPage> pages = new ArrayList<>();
+        for (int i : pageNums) {
+            String url = MessageFormat.format(LIST_PAGE,i);
+            pages.add(new MainPage(url));
+        }
+        return pages;
     }
 
     @Override
@@ -74,25 +76,22 @@ public class ScanPageTask extends AbstartTask {
         for (MainPage page :
                 result.getMainPageList()) {
             if (page.getUrl().equals(url)) {
-                page.setState(TaskState.ERROR);
+                page.setState(ScanItemState.ERROR);
                 break;
             }
         }
     }
 
 
-    private void addItem(String url){
-        synchronized (result.getMainPageList()){
-            result.getMainPageList().add(new MainPage(url));
-        }
-    }
-
     private void scanItemSuccess(String url, List<Node> nodes){
         for (MainPage mainPage :
                 result.getMainPageList()) {
             if(mainPage.getUrl().equals(url)){
-                mainPage.setNodes(nodes);
-                mainPage.setState(TaskState.SUCCESS);
+                synchronized (result){
+                    result.getNodes().addAll(nodes);
+                    mainPage.setNodeNum(nodes.size());
+                }
+                mainPage.setState(ScanItemState.SUCCESS);
                 break;
             }
         }
@@ -103,7 +102,7 @@ public class ScanPageTask extends AbstartTask {
                 result.getMainPageList()) {
             if(mainPage.getUrl().equals(url)){
                 mainPage.setErrMsg(errMsg);
-                mainPage.setState(TaskState.ERROR);
+                mainPage.setState(ScanItemState.ERROR);
                 break;
             }
         }

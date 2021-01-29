@@ -1,28 +1,21 @@
 package com.wangsheng.SpringCrawler.task;
 
-import com.wangsheng.SpringCrawler.downloader.Downloader;
-import com.wangsheng.SpringCrawler.generate.SpiderGenerator;
 import com.wangsheng.SpringCrawler.model.Node;
 import com.wangsheng.SpringCrawler.model.Result;
-import com.wangsheng.SpringCrawler.model.TaskState;
+import com.wangsheng.SpringCrawler.model.ScanItemState;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
 import us.codecraft.webmagic.Page;
-import us.codecraft.webmagic.Site;
-import us.codecraft.webmagic.Spider;
-import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Selectable;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
-public class ScanItemTask extends AbstartTask{
-    public ScanItemTask(Result result,int maxRetryTime) {
-        super(result,maxRetryTime);
+public class ScanItemTask extends AbstractTask{
+
+    public ScanItemTask(Result result) {
+        super(result);
     }
 
     @Override
@@ -50,7 +43,10 @@ public class ScanItemTask extends AbstartTask{
         List<String> urls = new ArrayList<>();
         result.setStatus(TotalTask.State.START_2);
         for (Node node : result.getNodes()){
-            urls.add(node.getUrl());
+            if(node.getState() == ScanItemState.NEW || node.getState() == ScanItemState.ERROR){
+                urls.add(node.getUrl());
+                node.setState(ScanItemState.LOADING);
+            }
         }
         return urls;
     }
@@ -65,7 +61,7 @@ public class ScanItemTask extends AbstartTask{
         for (Node page :
                 result.getNodes()) {
             if (page.getUrl().equals(url)) {
-                page.setState(TaskState.ERROR);
+                page.setState(ScanItemState.ERROR);
                 break;
             }
         }
@@ -75,7 +71,7 @@ public class ScanItemTask extends AbstartTask{
         for (Node item: result.getNodes()) {
             if(item.getUrl().equals(node.getUrl())){
                 BeanUtils.copyProperties(node,item);
-                item.setState(TaskState.SUCCESS);
+                item.setState(ScanItemState.SUCCESS);
                 break;
             }
         }
@@ -85,7 +81,7 @@ public class ScanItemTask extends AbstartTask{
         for (Node item: result.getNodes()) {
             if(item.getUrl().equals(node.getUrl())){
                 BeanUtils.copyProperties(node,item);
-                node.setState(TaskState.ERROR);
+                node.setState(ScanItemState.ERROR);
                 node.setErrMsg(errMsg);
                 break;
             }

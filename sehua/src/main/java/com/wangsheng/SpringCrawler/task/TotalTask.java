@@ -1,49 +1,68 @@
 package com.wangsheng.SpringCrawler.task;
 
-import com.wangsheng.SpringCrawler.model.MainPage;
-import com.wangsheng.SpringCrawler.model.Node;
 import com.wangsheng.SpringCrawler.model.Result;
-import com.wangsheng.SpringCrawler.model.TaskState;
 import lombok.Data;
 
-import javax.websocket.Session;
-import java.util.Arrays;
-import java.util.Currency;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
 
 @Data
-public class TotalTask extends Thread{
+public class TotalTask{
     public enum State {
         NEW,START_1,END_1,START_2,END
     }
     private String taskId;
-    private Result result = new Result();
-    private int total;
-    public TotalTask(int total){
+    private Result result;
+    private int []pageNums;
+
+    private Thread currentThread;
+
+
+    public TotalTask(int []pageNums){
         this.taskId = UUID.randomUUID().toString();
-        this.total =total;
+        this.pageNums =pageNums;
+        this.result = new Result();
+        this.result.setMainPageList(ScanPageTask.generate(pageNums));
     }
 
-    @Override
-    public void run(){
-        try{
-            ScanPageTask  task1 = new ScanPageTask(result,total);
-            task1.start();
-            for (MainPage mainPage:
-                 result.getMainPageList()) {
-                result.getNodes().addAll(mainPage.getNodes());
-                mainPage.setNodes(Arrays.asList(new Node[mainPage.getNodes().size()]));
+    public void start(){
+        if(currentThread == null){
+            currentThread = new TaskThread();
+            currentThread.start();
+        }else{
+            if(!currentThread.isAlive()){
+                //如果停止 则重新启动
+                currentThread = new TaskThread();
+                currentThread.start();
             }
-            ScanItemTask task2 = new ScanItemTask(result,10);
-            task2.start();
-        }catch (Exception e){
-            result.setErrors(true);
         }
     }
+
+    public boolean isAlive(){
+        if(currentThread == null){
+            return true;
+        }else {
+            return currentThread.isAlive();
+        }
+    }
+
 
     public Result getResult() {
         result.setCurrent(System.currentTimeMillis());
         return result;
+    }
+
+
+    public class TaskThread extends Thread{
+        @Override
+        public void run(){
+            try{
+                ScanPageTask  task1 = new ScanPageTask(result);
+                task1.start();
+                ScanItemTask task2 = new ScanItemTask(result);
+                task2.start();
+            }catch (Exception e){
+                result.setErrors(true);
+            }
+        }
     }
 }
