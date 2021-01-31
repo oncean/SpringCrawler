@@ -27,7 +27,13 @@ public class ScanItemTask extends AbstractTask{
                 Selectable node =  nodes.get(0);
                  item.setArticle(node.regex("【出演女优】：(.*?)<br>").get());
                  item.setCode(page.getHtml().$("#thread_subject").regex(">(.*?) ").get());
-                 item.setImgList(node.css("img").regex("file=\"(.*?)\"").all());
+                List<String> imgs = node.css("img").regex("file=\"(.*?)\"").all();
+                if(imgs.size()> 0){
+                    item.setCoverImg(imgs.get(0));
+                }
+                if(imgs.size()> 1){
+                    item.setDetailImg(imgs.get(1));
+                }
                         item.setMagnet(node.css("li").regex("<li>(.*?)</li>").get());
                         item.setTitle(node.regex("【影片名称】：(.*?)<br>").get());
                 scanNodeSuccess(item);

@@ -8,7 +8,8 @@ import java.util.List;
 public class Node extends ScanItem {
     private String title;
     private String article;
-    private List<String> imgList;
+    private String coverImg;
+    private String detailImg;
     private String magnet;
     private String code;
 

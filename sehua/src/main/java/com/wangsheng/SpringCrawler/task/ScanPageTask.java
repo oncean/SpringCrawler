@@ -60,8 +60,10 @@ public class ScanPageTask extends AbstractTask {
     public static List<MainPage> generate(int []pageNums){
         List<MainPage> pages = new ArrayList<>();
         for (int i : pageNums) {
-            String url = MessageFormat.format(LIST_PAGE,i);
-            pages.add(new MainPage(url));
+            if(i>0){
+                String url = MessageFormat.format(LIST_PAGE,i);
+                pages.add(new MainPage(url));
+            }
         }
         return pages;
     }

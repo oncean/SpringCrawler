@@ -8,7 +8,7 @@ import java.util.*;
 @Data
 public class TotalTask{
     public enum State {
-        NEW,START_1,END_1,START_2,END
+        NEW,START_1,END_1,START_2,END,ERROR_1,ERROR_2
     }
     private String taskId;
     private Result result;
@@ -55,14 +55,10 @@ public class TotalTask{
     public class TaskThread extends Thread{
         @Override
         public void run(){
-            try{
-                ScanPageTask  task1 = new ScanPageTask(result);
-                task1.start();
-                ScanItemTask task2 = new ScanItemTask(result);
-                task2.start();
-            }catch (Exception e){
-                result.setErrors(true);
-            }
+            ScanPageTask  task1 = new ScanPageTask(result);
+            task1.start();
+            ScanItemTask task2 = new ScanItemTask(result);
+            task2.start();
         }
     }
 }

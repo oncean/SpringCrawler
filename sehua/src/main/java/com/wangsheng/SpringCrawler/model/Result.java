@@ -20,8 +20,6 @@ public class Result{
 
     private TotalTask.State status = TotalTask.State.NEW;
 
-    private boolean errors = false;
-
     private long current;
 
 }
