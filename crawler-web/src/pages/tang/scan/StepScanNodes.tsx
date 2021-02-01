@@ -1,0 +1,50 @@
+import React from 'react';
+import { Space, Spin } from 'antd';
+import { CloseCircleOutlined, LoadingOutlined } from '@ant-design/icons';
+import Step from './Step';
+
+export default (props: any) => {
+  const { nodes = [], status } = props;
+  let loading = false;
+  if (status === 'START_2') {
+    loading = true;
+  }
+  let index = 0;
+  nodes.forEach((node: any) => {
+    if (node.state === 'SUCCESS') {
+      index += 1;
+    }
+  });
+
+  return (
+    <div>
+      <Step name="扫描节点" loading={loading}>
+        <div>
+          <div>{`加载${index}/${nodes.length}`}</div>
+
+          <div
+            style={{
+              maxHeight: 200,
+              overflow: 'auto',
+            }}
+          >
+            {nodes &&
+              nodes
+                .filter((page: any) => page.state !== 'SUCCESS')
+                .map((node: any) => (
+                  <div>
+                    <Space>
+                      <div>{node.url}</div>
+                      {node.state === 'LOADING' && <Spin indicator={<LoadingOutlined spin />} />}
+                      {node.state === 'ERROR' && (
+                        <Spin indicator={<CloseCircleOutlined color="red" />} />
+                      )}
+                    </Space>
+                  </div>
+                ))}
+          </div>
+        </div>
+      </Step>
+    </div>
+  );
+};
