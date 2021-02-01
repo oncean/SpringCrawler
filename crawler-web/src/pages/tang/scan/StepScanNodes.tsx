@@ -1,6 +1,6 @@
 import React from 'react';
 import { Space, Spin } from 'antd';
-import { CloseCircleOutlined, LoadingOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, LoadingOutlined,ClockCircleOutlined } from '@ant-design/icons';
 import Step from './Step';
 
 export default (props: any) => {
@@ -35,6 +35,7 @@ export default (props: any) => {
                   <div>
                     <Space>
                       <div>{node.url}</div>
+                      {node.state === 'NEW' && <Spin indicator={<ClockCircleOutlined />} />}
                       {node.state === 'LOADING' && <Spin indicator={<LoadingOutlined spin />} />}
                       {node.state === 'ERROR' && (
                         <Spin indicator={<CloseCircleOutlined color="red" />} />

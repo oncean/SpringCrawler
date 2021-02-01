@@ -27,6 +27,10 @@ public abstract class AbstractTask implements PageProcessor {
     public abstract void end();
     public abstract void errorHandler(String url);
 
+    public void onStart(Request request){
+        log.info("开始下载"+ request.getUrl());
+    }
+
 
     @Override
     public void process(Page page) {
@@ -68,7 +72,7 @@ public abstract class AbstractTask implements PageProcessor {
 
         @Override
         public Page download(Request request, Task task) {
-            log.info("开始下载"+ request.getUrl());
+            onStart(request);
             return super.download(request,task);
         }
         @Override

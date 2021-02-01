@@ -1,7 +1,7 @@
 package com.wangsheng.SpringCrawler.task;
 
 import com.wangsheng.SpringCrawler.model.MainPage;
-import com.wangsheng.SpringCrawler.model.Node;
+import com.wangsheng.SpringCrawler.entity.Node;
 import com.wangsheng.SpringCrawler.model.Result;
 import com.wangsheng.SpringCrawler.model.ScanItemState;
 import lombok.extern.slf4j.Slf4j;

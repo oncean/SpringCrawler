@@ -1,11 +1,12 @@
 package com.wangsheng.SpringCrawler.task;
 
-import com.wangsheng.SpringCrawler.model.Node;
+import com.wangsheng.SpringCrawler.entity.Node;
 import com.wangsheng.SpringCrawler.model.Result;
 import com.wangsheng.SpringCrawler.model.ScanItemState;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import us.codecraft.webmagic.Page;
+import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.selector.Selectable;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class ScanItemTask extends AbstractTask{
             if(nodes != null && nodes.size()>0){
                 Selectable node =  nodes.get(0);
                  item.setArticle(node.regex("【出演女优】：(.*?)<br>").get());
-                 item.setCode(page.getHtml().$("#thread_subject").regex(">(.*?) ").get());
+                 item.setCode(page.getHtml().css(".attnm a").regex(">(.*?)-C").get().toUpperCase());
                 List<String> imgs = node.css("img").regex("file=\"(.*?)\"").all();
                 if(imgs.size()> 0){
                     item.setCoverImg(imgs.get(0));
@@ -34,11 +35,12 @@ public class ScanItemTask extends AbstractTask{
                 if(imgs.size()> 1){
                     item.setDetailImg(imgs.get(1));
                 }
+                item.setCreateTime(page.getHtml().css(".authi em span").regex("title=\"(.*?)\"").get());
                         item.setMagnet(node.css("li").regex("<li>(.*?)</li>").get());
                         item.setTitle(node.regex("【影片名称】：(.*?)<br>").get());
-                scanNodeSuccess(item);
-            }
-        }catch (Exception e){
+            scanNodeSuccess(item);
+        }
+    }catch (Exception e){
             log.error("parse page " + page.getUrl().get()+"failed,error is ", e);
             scanNodeError(item,e.getMessage());
         }
@@ -51,10 +53,20 @@ public class ScanItemTask extends AbstractTask{
         for (Node node : result.getNodes()){
             if(node.getState() == ScanItemState.NEW || node.getState() == ScanItemState.ERROR){
                 urls.add(node.getUrl());
-                node.setState(ScanItemState.LOADING);
+                node.setState(ScanItemState.NEW);
             }
         }
         return urls;
+    }
+
+    @Override
+    public void onStart(Request request) {
+        String url = request.getUrl();
+        for (Node node : result.getNodes()){
+            if(node.getUrl().equals(url)){
+                node.setState(ScanItemState.LOADING);
+            }
+        }
     }
 
     @Override

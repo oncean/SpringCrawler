@@ -3,3 +3,17 @@ server:
 spring:
   application:
     name: SpringCrawler
+  datasource:
+    url: jdbc:sqlite::resource:sqlite/db.sqlite
+    username: # 因为没有用户名和密码，所以这两个参数就没有值
+    password:
+    driver-class-name: org.sqlite.JDBC
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: com.wangsheng.SpringCrawler.config.SQLiteDialect
+
+# mybatis配置
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml # 配置mapper.xml文件路径
+  type-aliases-package: com.wangsheng.SpringCrawler.entity # 实体类包名

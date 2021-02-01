@@ -38,9 +38,17 @@ const ScanView:React.FC<IScanViewProps> = (props) => {
         pages: pageNums,
       },
     });
-    history.push(`/sehuaScan?taskId=${data}`);
+    history.push({
+      key:'TangScanTask',
+      query:{
+        taskId:data
+      }
+    });
   }
   const buildSteps = (result:Result)=>{
+    if(!result){
+      return
+    }
     setTaskState(result.status)
     if (result.status === 'START_1'){
       setpages(result.mainPageList||[])
@@ -65,6 +73,9 @@ const ScanView:React.FC<IScanViewProps> = (props) => {
       }
     }
   }
+  const saveToDb = ()=>{
+    request.get('/carwelerJava/task/saveToDb/'+taskId);
+  }
   useEffect(() => {
     init()
   }, [taskId]);
@@ -87,8 +98,8 @@ const ScanView:React.FC<IScanViewProps> = (props) => {
         <StepScanResult  pages={pages} nodes={nodes}/>
         <div style={{textAlign:'center'}}>
               <Button onClick={retry}>重新扫描</Button>
-              <Button onClick={()=>{setshowResult(true)}}>生成结果</Button>
-          </div>
+              <Button onClick={saveToDb}>保存结果</Button>
+        </div>
       </div>
     }
     return div

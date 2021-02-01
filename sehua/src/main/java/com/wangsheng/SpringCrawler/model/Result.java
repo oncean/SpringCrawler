@@ -1,15 +1,12 @@
 package com.wangsheng.SpringCrawler.model;
 
 
+import com.wangsheng.SpringCrawler.entity.Node;
 import com.wangsheng.SpringCrawler.task.TotalTask;
 import lombok.Data;
-import org.springframework.beans.BeanUtils;
-import us.codecraft.webmagic.selector.Selectable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Data
 public class Result{
