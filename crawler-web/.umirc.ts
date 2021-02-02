@@ -16,7 +16,7 @@ export default defineConfig({
   },
   fastRefresh:{},
   history:{
-    type:"browser"
+    type:"hash"
   },
   proxy,
   routes,

@@ -1,11 +1,11 @@
 package com.wangsheng.SpringCrawler.controller;
 
 
-import com.github.pagehelper.PageInfo;
 import com.wangsheng.SpringCrawler.dao.NodeDao;
 import com.wangsheng.SpringCrawler.entity.Node;
 import com.wangsheng.SpringCrawler.model.CreateParams;
 import com.wangsheng.SpringCrawler.model.GetPageParams;
+import com.wangsheng.SpringCrawler.model.PageInfo;
 import com.wangsheng.SpringCrawler.service.NodeService;
 import com.wangsheng.SpringCrawler.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;

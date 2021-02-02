@@ -19,7 +19,13 @@ const routes: IConfigFromPlugins["routes"] = [
       {
         path: 'scanTask',
         name: 'TangScanTask',
-        component: '@/pages/tang/scan',
+        component: '@/pages/tang/scan/task',
+        hideInMenu: true,
+      },
+      {
+        path: 'scanResult',
+        name: 'scanResult',
+        component: '@/pages/tang/scan/result',
         hideInMenu: true,
       }
     ],

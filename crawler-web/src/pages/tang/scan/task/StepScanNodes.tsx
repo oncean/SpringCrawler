@@ -21,7 +21,7 @@ export default (props: any) => {
       <Step name="扫描节点" loading={loading}>
         <div>
           <div>
-            <Progress percent={index/nodes.length} size="small" format={()=>`加载${index}/${nodes.length}`} />
+            <Progress percent={index/nodes.length *100} size="small" format={()=>`加载${index}/${nodes.length}`} />
           </div>
 
           <div
@@ -36,7 +36,7 @@ export default (props: any) => {
                 .map((node: any) => (
                   <div>
                     <Space>
-                      <div>{node.url}</div>
+                      <div>{node.code || node.url}</div>
                       {node.state === 'NEW' && <Spin indicator={<ClockCircleOutlined />} />}
                       {node.state === 'LOADING' && <Spin indicator={<LoadingOutlined spin />} />}
                       {node.state === 'ERROR' && (

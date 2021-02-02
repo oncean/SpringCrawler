@@ -8,12 +8,13 @@ interface ScanItem{
 }
 
 interface Node extends ScanItem{
-  title:string,
-  article:string,
-  coverImg:string,
-  detailImg:string,
+  createTime?:string,
+  title?:string,
+  article?:string,
+  coverImg?:string,
+  detailImg?:string,
   magnet:string,
-  code:string
+  code?:string
 }
 
 interface MainPage extends ScanItem{

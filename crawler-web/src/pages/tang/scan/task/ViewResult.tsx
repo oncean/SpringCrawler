@@ -9,7 +9,7 @@ interface props {
 
 export default (props: props) => {
   const [modelShow, setModelShow] = useState(false);
-  const [currentNode, setCurrentNode] = useState({});
+  const [currentNode, setCurrentNode] = useState<Node>();
   const [nodes, setnodes] = useState<Node[]>([]);
   const [total, setTotal] = useState(0)
 
@@ -20,7 +20,7 @@ export default (props: props) => {
         pageNo,pageSize
       },
     });
-    setnodes(data.content||[])
+    setnodes(data.list||[])
     setTotal(data.totalElements||0)
   }
   useEffect(() => {
@@ -69,7 +69,7 @@ export default (props: props) => {
       showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
       total={total} />
 
-      {modelShow && (
+      {modelShow && currentNode && (
         <Modal
           width="100%"
           title="Basic Modal"

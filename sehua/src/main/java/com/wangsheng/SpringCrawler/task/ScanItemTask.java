@@ -13,36 +13,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class ScanItemTask extends AbstractTask{
+public class ScanItemTask extends AbstractTask {
 
     public ScanItemTask(Result result) {
         super(result);
     }
 
     @Override
-    public void parse(Page page){
+    public void parse(Page page) {
         Node item = new Node(page.getUrl().get());
-        try{
+        try {
             List<Selectable> nodes = page.getHtml().css("div.pct td").nodes();
-            if(nodes != null && nodes.size()>0){
-                Selectable node =  nodes.get(0);
-                 item.setArticle(node.regex("【出演女优】：(.*?)<br>").get());
-                 item.setCode(page.getHtml().css(".attnm a").regex(">(.*?)-C").get().toUpperCase());
-                List<String> imgs = node.css("img").regex("file=\"(.*?)\"").all();
-                if(imgs.size()> 0){
-                    item.setCoverImg(imgs.get(0));
+            if (nodes != null && nodes.size() > 0) {
+                Selectable node = nodes.get(0);
+                item.setArticle(node.regex("【出演女优】：(.*?)<br>").get());
+                String code = page.getHtml().css(".attnm a").regex(">(.*?)-C").get();
+                if (code != null) {
+                    item.setCode(code.toUpperCase());
                 }
-                if(imgs.size()> 1){
-                    item.setDetailImg(imgs.get(1));
+                List<String> imgs = node.css("img").regex("file=\"(.*?)\"").all();
+                if (imgs != null) {
+                    if (imgs.size() > 0) {
+                        item.setCoverImg(imgs.get(0));
+                    }
+                    if (imgs.size() > 1) {
+                        item.setDetailImg(imgs.get(1));
+                    }
                 }
                 item.setCreateTime(page.getHtml().css(".authi em span").regex("title=\"(.*?)\"").get());
-                        item.setMagnet(node.css("li").regex("<li>(.*?)</li>").get());
-                        item.setTitle(node.regex("【影片名称】：(.*?)<br>").get());
-            scanNodeSuccess(item);
-        }
-    }catch (Exception e){
-            log.error("parse page " + page.getUrl().get()+"failed,error is ", e);
-            scanNodeError(item,e.getMessage());
+                item.setMagnet(node.css("li").regex("<li>(.*?)</li>").get());
+                item.setTitle(node.regex("【影片名称】：(.*?)<br>").get());
+                scanNodeSuccess(item);
+            }
+        } catch (Exception e) {
+            log.error("parse page " + page.getUrl().get() + "failed,error is ", e);
+            scanNodeError(item, e.getMessage());
         }
     }
 
@@ -50,8 +55,8 @@ public class ScanItemTask extends AbstractTask{
     public List<String> buildUrls() {
         List<String> urls = new ArrayList<>();
         result.setStatus(TotalTask.State.START_2);
-        for (Node node : result.getNodes()){
-            if(node.getState() == ScanItemState.NEW || node.getState() == ScanItemState.ERROR){
+        for (Node node : result.getNodes()) {
+            if (node.getState() == ScanItemState.NEW || node.getState() == ScanItemState.ERROR) {
                 urls.add(node.getUrl());
                 node.setState(ScanItemState.NEW);
             }
@@ -62,8 +67,8 @@ public class ScanItemTask extends AbstractTask{
     @Override
     public void onStart(Request request) {
         String url = request.getUrl();
-        for (Node node : result.getNodes()){
-            if(node.getUrl().equals(url)){
+        for (Node node : result.getNodes()) {
+            if (node.getUrl().equals(url)) {
                 node.setState(ScanItemState.LOADING);
             }
         }
@@ -85,20 +90,20 @@ public class ScanItemTask extends AbstractTask{
         }
     }
 
-    public void scanNodeSuccess(Node node){
-        for (Node item: result.getNodes()) {
-            if(item.getUrl().equals(node.getUrl())){
-                BeanUtils.copyProperties(node,item);
+    public void scanNodeSuccess(Node node) {
+        for (Node item : result.getNodes()) {
+            if (item.getUrl().equals(node.getUrl())) {
+                BeanUtils.copyProperties(node, item);
                 item.setState(ScanItemState.SUCCESS);
                 break;
             }
         }
     }
 
-    public void scanNodeError(Node node,String errMsg){
-        for (Node item: result.getNodes()) {
-            if(item.getUrl().equals(node.getUrl())){
-                BeanUtils.copyProperties(node,item);
+    public void scanNodeError(Node node, String errMsg) {
+        for (Node item : result.getNodes()) {
+            if (item.getUrl().equals(node.getUrl())) {
+                BeanUtils.copyProperties(node, item);
                 node.setState(ScanItemState.ERROR);
                 node.setErrMsg(errMsg);
                 break;
