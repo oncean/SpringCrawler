@@ -1,5 +1,5 @@
 import React from 'react';
-import { Space, Spin } from 'antd';
+import { Space, Spin, Progress } from 'antd';
 import { CloseCircleOutlined, LoadingOutlined,ClockCircleOutlined } from '@ant-design/icons';
 import Step from './Step';
 
@@ -20,7 +20,9 @@ export default (props: any) => {
     <div>
       <Step name="扫描节点" loading={loading}>
         <div>
-          <div>{`加载${index}/${nodes.length}`}</div>
+          <div>
+            <Progress percent={index/nodes.length} size="small" format={()=>`加载${index}/${nodes.length}`} />
+          </div>
 
           <div
             style={{

@@ -4,14 +4,17 @@ spring:
   application:
     name: SpringCrawler
   datasource:
-    url: jdbc:sqlite::resource:sqlite/db.sqlite
-    username: # 因为没有用户名和密码，所以这两个参数就没有值
+    url: jdbc:h2:./sehua/localfile/h2/db;AUTO_SERVER=TRUE
+    username: root
     password:
-    driver-class-name: org.sqlite.JDBC
+    driver-class-name: org.h2.Driver
   jpa:
     hibernate:
       ddl-auto: update
-    database-platform: com.wangsheng.SpringCrawler.config.SQLiteDialect
+    database: h2
+  h2:
+    console:
+      enabled: true
 
 # mybatis配置
 mybatis:

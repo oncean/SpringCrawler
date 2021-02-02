@@ -1,18 +1,37 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import { Button, Image, message  } from 'antd';
 
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+import request from 'umi-request';
+
+interface IViewResultDetail{
+  node:Node
+}
+
+const ViewResultDetail:React.FC<IViewResultDetail> =  (props)=>{
+  const {node} = props
+  const [ifExistInDB, setIfExistInDB] = useState(false)
 
 
+  useEffect(() => {
+    request.get('/carwelerJava/node/ifExistInDB/'+node.code).then((result)=>{
+      setIfExistInDB(result)
+    });
+  }, [])
 
-export default (props:any)=>{
-  const {node={}} = props
+  const saveToDB = ()=>{
+    request.post('/carwelerJava/node/save', {
+      data: node,
+    });
+  }
 
   return <div style={{
     backgroundColor:'#fff',
     marginTop:20
   }}>
-  <div>{node.code}</div>
+  <div>{node.code} 
+    <Button onClick={saveToDB} disabled={ifExistInDB}>保存</Button>
+  </div>
     <div>{node.title}</div>
     <div>{node.article}</div>
     <div>
@@ -33,3 +52,4 @@ export default (props:any)=>{
         </div>
   </div>
 }
+export default ViewResultDetail

@@ -1,6 +1,5 @@
-package com.wangsheng.SpringCrawler.task;
+package com.wangsheng.task;
 
-import com.wangsheng.SpringCrawler.model.Result;
 import lombok.extern.slf4j.Slf4j;
 import us.codecraft.webmagic.*;
 import us.codecraft.webmagic.downloader.HttpClientDownloader;
@@ -13,11 +12,8 @@ import java.util.List;
 @Slf4j
 public abstract class AbstractTask implements PageProcessor {
 
-    protected Result result;
 
-    public  AbstractTask(Result result){
-        //默认重试时间为10次
-        this.result = result;
+    public  AbstractTask(){
     }
 
 
@@ -76,7 +72,6 @@ public abstract class AbstractTask implements PageProcessor {
 
 
     public class InnerDownloader  extends HttpClientDownloader {
-
 
         @Override
         public Page download(Request request, Task task) {

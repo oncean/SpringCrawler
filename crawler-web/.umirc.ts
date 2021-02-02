@@ -4,8 +4,15 @@ import proxy from './config/proxy';
 export default defineConfig({
   layout: {
     name: 'Ant Design',
-    locale: true,
+    locale: false,
     layout: 'top',
+  },
+  locale: {
+    default: 'zh-CN',
+    antd: true,
+    title: false,
+    baseNavigator: true,
+    baseSeparator: '-',
   },
   fastRefresh:{},
   history:{

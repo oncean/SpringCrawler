@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name="d_nodes")
+@Table(name="t_nodes")
 public class Node extends ScanItem {
 
     @Id    //主键id

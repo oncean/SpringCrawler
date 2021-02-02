@@ -24,7 +24,7 @@ const ScanView:React.FC<IScanViewProps> = (props) => {
   const [status, setstatus] = useState(0);
   const [taskState, setTaskState] = useState('NEW');
   const [nodes, setnodes] = useState<Node[]>([]);
-  const [showResult, setshowResult] = useState(false);
+  const [showResult, setshowResult] = useState(true);
   
   const retry = ()=>{
     setshowResult(false)
@@ -98,7 +98,9 @@ const ScanView:React.FC<IScanViewProps> = (props) => {
         <StepScanResult  pages={pages} nodes={nodes}/>
         <div style={{textAlign:'center'}}>
               <Button onClick={retry}>重新扫描</Button>
-              <Button onClick={saveToDb}>保存结果</Button>
+              <Button onClick={()=>{
+                setshowResult(true)
+              }}>显示结果</Button>
         </div>
       </div>
     }
@@ -136,7 +138,6 @@ const ScanView:React.FC<IScanViewProps> = (props) => {
     }
     {
       taskId &&(
-        
         <div>
           <div style={{
             width:400,
@@ -149,7 +150,7 @@ const ScanView:React.FC<IScanViewProps> = (props) => {
     }
   </div>
 
-  {showResult && <ViewResult nodes={nodes}/>}
+  {showResult && <ViewResult taskId={taskId}/>}
   </div>;
 };
 export default ScanView
